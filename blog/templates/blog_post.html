@@ -1,6 +1,7 @@
 {% extends "blog_base.html" %} {% block content %} {% load staticfiles %} {% load social_share %}
 
 <div class="container">
+  
     <h1 class="article-title">{{ post.title }}</h1>
     {% for author in post.authors.all %}
     <a href="{{ author.get_absolute_url }}" class="no-decoration">
@@ -12,7 +13,7 @@
     </article>
     {% if post.tags.all.count > 0 %}
     <aside class="blog">
-        <p>
+        <p style="font-family:'futura_std'">
             Tags: {% for tag in post.tags.all %}
             <a href="{{ tag.get_absolute_url }}" class="no-decoration">{{ tag.name }}</a> {% endfor %}
         </p>
@@ -29,11 +30,11 @@
         <script>
 
         var disqus_config = function () {
-        
-        this.page.url = "http://theharvardadvocate.com{{ post.get_absolute_url }}";  
-        this.page.identifier = "{{ post.slug }}"; 
+
+        this.page.url = "http://theharvardadvocate.com{{ post.get_absolute_url }}";
+        this.page.identifier = "{{ post.slug }}";
         this.page.title = "{{ post.title }}";
-    
+
         };
         (function() { // DON'T EDIT BELOW THIS LINE
         var d = document, s = d.createElement('script');
@@ -43,7 +44,7 @@
         })();
         </script>
         <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-                                        
+
     </div>
 
     <h3>

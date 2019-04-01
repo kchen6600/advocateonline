@@ -17,15 +17,26 @@ import re
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
 from advertisement.helper import getAds
-
 from haystack.query import SearchQuerySet
 from haystack.views import SearchView
 from haystack.forms import SearchForm
 from django.shortcuts import redirect
 from itertools import chain
 import logging
-
-
+from random import uniform, shuffle
+from cStringIO import StringIO
+from PIL import ImageFont, Image, ImageDraw
+import numpy, pylab
+from mpl_toolkits.mplot3d import Axes3D
+import base64
+#
+# from PIL import Image, ImageDraw, ImageFont
+# import string
+# from matplotlib.font_manager import findSystemFonts
+# import random
+# import numpy, pylab
+# from mpl_toolkits.mplot3d import Axes3D
+fontPath = '/Library/Fonts/Arial.ttf'
 logger = logging.getLogger("magazine")
 
 
@@ -520,4 +531,69 @@ def tech(request):
   template_name = 'tech.html'
   return render(request, template_name)
 
+def makeImage(text, width=425, height=100, angle=None):
+    '''
+    Function sourced from: https://github.com/013231/3D-CAPTCHA/blob/master/captcha.py
+    '''
+    '''Generate a 3d CAPTCHA image.
+    Args:
+        text: Text in the image.
+        width: Image width in pixel.
+        height: Image height in pixel.
+        angle: The angle between text and X axis.
+    Returns:
+        Binary data of CAPTCHA image in PNG format.
+    '''
+    angle = angle if angle != None else uniform(-2, 10)
+    fontsize = 18
+    if len(text) > 20:
+        width = 800
+        fontsize = int(len(text) / 2) + 2
+    else:
+        width = int(425 + (len(text)-7)*30)
+        fontsize = 18
+    try:
+        font = ImageFont.truetype(fontPath, fontsize)
+    except IOError:
+        raise IOError(
+            'Font file doesn\'t exist. Please set `fontPath` correctly.')
+    txtW, txtH = font.getsize(text)
+    img = Image.new('L', (txtW * 3, txtH * 3), 255)
+    drw = ImageDraw.Draw(img)
+    drw.text((txtW, txtH), text, font=font)
 
+    fig = pylab.figure(figsize=(width/100.0, height/100.0))
+    ax = Axes3D(fig)
+    X, Y = numpy.meshgrid(range(img.size[0]), range(img.size[1]))
+    Z = 1 - numpy.asarray(img) / 255
+    ax.plot_wireframe(X, -Y, Z, rstride=1, cstride=1)
+    ax.set_zlim((-3, 3))
+    ax.set_xlim((txtW * 1.1, txtW * 1.9))
+    ax.set_ylim((-txtH * 1.9, -txtH * 1.1))
+    ax.set_axis_off()
+    ax.view_init(elev=60, azim=-90 + angle)
+
+    fim = StringIO()
+    fig.savefig(fim, format='png')
+    binData = fim.getvalue()
+    encodedWindow = base64.b64encode(binData)
+    fim.close()
+    pylab.close()
+    return encodedWindow
+
+def graphicsgenerator(request):
+    if request.method == 'POST':
+        input_text = request.POST.get("inputtext")
+        invalid = "Something went wrong"
+        myvar1 = "Something went wrong"
+        if input_text == "":
+            invalid = "Invalid input"
+            context = {'nofoo' : invalid}
+        else:
+            img = makeImage(input_text)
+            myvar1 = img
+            context = {'foo': myvar1}
+    else:
+        context = {'nofoo' : "No input"}
+    template_name = 'graphics.html'
+    return render(request, template_name, context)

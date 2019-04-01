@@ -20,8 +20,8 @@
         {% if post.lead_photo %}
              <figure><a href="{{post.get_absolute_url}}" class="no-decoration"><img class='img-responsive-blog' src="{{MEDIA_URL}}{{ post.lead_photo }}"></a></figure>
         {% endif %}
-    
-      <p class="article-summary"> {{post.teaser|safe}} 
+
+      <p class="article-summary"> {{post.teaser|safe}}
         <h4> <a href="{{ post.get_absolute_url }}" class="read-more">Read More</a></h4>
       </p>
   </div>

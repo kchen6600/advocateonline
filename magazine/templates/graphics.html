@@ -1,0 +1,23 @@
+{% extends "base_original.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<body>
+  <div class="container" style="text-align:center;">
+  <h1>Graphics Generator</h1>
+  <p>Note: limitations in terms of text length</p>
+  <form action='/graphicsgenerator' method='POST'>
+    {% csrf_token %}
+          <label for="inputtext">Enter Text:</label>
+          <input id="inputtext" type="text" name="inputtext" value="input" />
+          <br><br>
+          <button style="margin:auto;display:block;" type="submit" name="submit" value="submit">Generate</button>
+  </form>
+  <br>
+  {% if foo %}
+  <img src="data:image/png;base64,{{ foo }}">
+  {% elif nofoo %}
+  <p>{{ nofoo }}</p>
+  {% endif %}
+</div>
+{% endblock %}

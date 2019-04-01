@@ -53,7 +53,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^tinymce/', include('tinymce.urls')),
-
+    url(r'^graphicsgenerator$', magazine.views.graphicsgenerator),
     url(r'^donate$', payments.views.donate),
     url(r'^sendDonation$',payments.views.sendDonation),
     url(r'^galadonation$',payments.views.galaDonation),
@@ -72,4 +72,3 @@ urlpatterns = [
     url(r'^explore_archives', magazine.views.explore_archives)
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
